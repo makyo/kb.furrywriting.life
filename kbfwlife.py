@@ -71,8 +71,9 @@ def teardown_request(exception):
         db.close()
 
 
-@app.route('/')
-def front():
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def front(path):
     return render_template('app.jinja2')
 
 

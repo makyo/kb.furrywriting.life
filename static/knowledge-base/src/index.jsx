@@ -61,7 +61,7 @@ const KnowledgeBase = () => (
 render((
     <Router>
       <div>
-        <ul>
+        <ul className="router-links">
           <li><Link to="/categories">Categories</Link></li>
           <li><Link to="/users">Users</Link></li>
         </ul>

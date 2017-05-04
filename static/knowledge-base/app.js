@@ -24375,6 +24375,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRouterDom = require('react-router-dom');
+
 var _User = require('./User.jsx');
 
 var _User2 = _interopRequireDefault(_User);
@@ -24390,19 +24392,45 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Users = function (_React$Component) {
   _inherits(Users, _React$Component);
 
-  function Users() {
+  function Users(props) {
     _classCallCheck(this, Users);
 
-    return _possibleConstructorReturn(this, (Users.__proto__ || Object.getPrototypeOf(Users)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Users.__proto__ || Object.getPrototypeOf(Users)).call(this, props));
+
+    _this.state = { users: [] };
+    return _this;
   }
 
   _createClass(Users, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      var _this2 = this;
+
+      fetch('/api/users').then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        _this2.setState({
+          users: data.results
+        });
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'code',
+        'ul',
         null,
-        'Users'
+        this.state.users.map(function (user) {
+          return _react2.default.createElement(
+            'li',
+            { key: user.username },
+            _react2.default.createElement(
+              _reactRouterDom.Link,
+              { to: '/user/' + user.username },
+              user.username
+            )
+          );
+        })
       );
     }
   }]);
@@ -24412,7 +24440,7 @@ var Users = function (_React$Component) {
 
 exports.default = Users;
 
-},{"./User.jsx":227,"react":218}],229:[function(require,module,exports){
+},{"./User.jsx":227,"react":218,"react-router-dom":180}],229:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -24528,7 +24556,7 @@ var KnowledgeBase = function KnowledgeBase() {
     null,
     _react2.default.createElement(
       'ul',
-      null,
+      { className: 'router-links' },
       _react2.default.createElement(
         'li',
         null,
