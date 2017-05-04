@@ -9,6 +9,11 @@ from flask import (
 api = Blueprint('api', __name__)
 
 
+@api.route('/')
+def ready():
+    return json.jsonify({'ready': 'yes'})
+
+    
 @api.route('/categories')
 def get_categories():
     result = {
@@ -72,6 +77,7 @@ def get_topics(category):
     return json.jsonify(result)
 
 
+@api.route('/topic/<topic>')
 @api.route('/category/<category>/topic/<topic>')
 def get_topic(category, topic):
     result = {
@@ -94,8 +100,8 @@ def get_topic(category, topic):
             join topics on topics.slug = expertise.topic
             join categories on categories.slug = topics.category
             join users on users.username = expertise.user
-        where topics.category = ? and topics.slug = ?''',
-        (category, topic))
+        where topics.slug = ?''',
+        (topic,))
     for row in cur:
         result['results'].append({
             'expertise_id': row[0],

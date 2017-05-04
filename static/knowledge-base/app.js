@@ -24091,9 +24091,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Category = require('./Category.jsx');
-
-var _Category2 = _interopRequireDefault(_Category);
+var _reactRouterDom = require('react-router-dom');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24106,19 +24104,49 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Categories = function (_React$Component) {
   _inherits(Categories, _React$Component);
 
-  function Categories() {
+  function Categories(props) {
     _classCallCheck(this, Categories);
 
-    return _possibleConstructorReturn(this, (Categories.__proto__ || Object.getPrototypeOf(Categories)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Categories.__proto__ || Object.getPrototypeOf(Categories)).call(this, props));
+
+    _this.state = { categories: [] };
+    fetch('/api/categories').then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      _this.setState({
+        categories: data.results
+      });
+    });
+    return _this;
   }
 
   _createClass(Categories, [{
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'code',
+        'div',
         null,
-        'Categories'
+        _react2.default.createElement(
+          'h2',
+          null,
+          'Categories'
+        ),
+        _react2.default.createElement(
+          'ul',
+          null,
+          this.state.categories.map(function (category) {
+            return _react2.default.createElement(
+              'li',
+              { key: category.slug },
+              _react2.default.createElement(
+                _reactRouterDom.Link,
+                {
+                  to: '/category/' + category.slug },
+                category.category
+              )
+            );
+          })
+        )
       );
     }
   }]);
@@ -24128,7 +24156,7 @@ var Categories = function (_React$Component) {
 
 exports.default = Categories;
 
-},{"./Category.jsx":223,"react":218}],223:[function(require,module,exports){
+},{"react":218,"react-router-dom":180}],223:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24140,6 +24168,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterDom = require('react-router-dom');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24152,19 +24182,55 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Category = function (_React$Component) {
   _inherits(Category, _React$Component);
 
-  function Category() {
+  function Category(props) {
     _classCallCheck(this, Category);
 
-    return _possibleConstructorReturn(this, (Category.__proto__ || Object.getPrototypeOf(Category)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Category.__proto__ || Object.getPrototypeOf(Category)).call(this, props));
+
+    _this.state = { topics: [], title: "(no topics)" };
+    fetch('/api/category/' + _this.props.match.params.categorySlug + '/topics').then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      var newState = {
+        topics: data.results
+      };
+      if (data.results.length > 0) {
+        newState.title = data.results[0].category;
+      }
+      _this.setState(newState);
+    });
+    return _this;
   }
 
   _createClass(Category, [{
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       return _react2.default.createElement(
-        'code',
+        'div',
         null,
-        'Category'
+        _react2.default.createElement(
+          'h2',
+          null,
+          this.state.title
+        ),
+        _react2.default.createElement(
+          'ul',
+          null,
+          this.state.topics.map(function (topic) {
+            return _react2.default.createElement(
+              'li',
+              { key: topic.slug },
+              _react2.default.createElement(
+                _reactRouterDom.Link,
+                {
+                  to: _this2.props.match.url + '/topic/' + topic.slug },
+                topic.topic
+              )
+            );
+          })
+        )
       );
     }
   }]);
@@ -24174,7 +24240,7 @@ var Category = function (_React$Component) {
 
 exports.default = Category;
 
-},{"react":218}],224:[function(require,module,exports){
+},{"react":218,"react-router-dom":180}],224:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24186,6 +24252,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterDom = require('react-router-dom');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24208,9 +24276,22 @@ var Expertise = function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'code',
+        'div',
         null,
-        'Expertise'
+        _react2.default.createElement(
+          'h3',
+          null,
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/user/' + this.props.expertise.user },
+            this.props.expertise.user
+          )
+        ),
+        _react2.default.createElement(
+          'p',
+          null,
+          this.props.expertise.expertise
+        )
       );
     }
   }]);
@@ -24220,149 +24301,7 @@ var Expertise = function (_React$Component) {
 
 exports.default = Expertise;
 
-},{"react":218}],225:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Topic = function (_React$Component) {
-  _inherits(Topic, _React$Component);
-
-  function Topic() {
-    _classCallCheck(this, Topic);
-
-    return _possibleConstructorReturn(this, (Topic.__proto__ || Object.getPrototypeOf(Topic)).apply(this, arguments));
-  }
-
-  _createClass(Topic, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'code',
-        null,
-        'Topic'
-      );
-    }
-  }]);
-
-  return Topic;
-}(_react2.default.Component);
-
-exports.default = Topic;
-
-},{"react":218}],226:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Topic = require('./Topic.jsx');
-
-var _Topic2 = _interopRequireDefault(_Topic);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Topics = function (_React$Component) {
-  _inherits(Topics, _React$Component);
-
-  function Topics() {
-    _classCallCheck(this, Topics);
-
-    return _possibleConstructorReturn(this, (Topics.__proto__ || Object.getPrototypeOf(Topics)).apply(this, arguments));
-  }
-
-  _createClass(Topics, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'code',
-        null,
-        'Topics'
-      );
-    }
-  }]);
-
-  return Topics;
-}(_react2.default.Component);
-
-exports.default = Topics;
-
-},{"./Topic.jsx":225,"react":218}],227:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var User = function (_React$Component) {
-  _inherits(User, _React$Component);
-
-  function User() {
-    _classCallCheck(this, User);
-
-    return _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).apply(this, arguments));
-  }
-
-  _createClass(User, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'code',
-        null,
-        'User'
-      );
-    }
-  }]);
-
-  return User;
-}(_react2.default.Component);
-
-exports.default = User;
-
-},{"react":218}],228:[function(require,module,exports){
+},{"react":218,"react-router-dom":180}],225:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24377,9 +24316,179 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = require('react-router-dom');
 
-var _User = require('./User.jsx');
+var _Expertise = require('./Expertise.jsx');
 
-var _User2 = _interopRequireDefault(_User);
+var _Expertise2 = _interopRequireDefault(_Expertise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Topic = function (_React$Component) {
+  _inherits(Topic, _React$Component);
+
+  function Topic(props) {
+    _classCallCheck(this, Topic);
+
+    var _this = _possibleConstructorReturn(this, (Topic.__proto__ || Object.getPrototypeOf(Topic)).call(this, props));
+
+    _this.state = { expertise: [], category: '(no topics)', topic: '(no expertise)' };
+    fetch('/api/category/' + _this.props.match.params.categorySlug + '/topic/' + _this.props.match.params.topicSlug).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      var newState = {
+        expertise: data.results
+      };
+      if (data.results.length > 0) {
+        newState.category = data.results[0].category;
+        newState.topic = data.results[0].topic;
+      }
+      _this.setState(newState);
+    });
+    return _this;
+  }
+
+  _createClass(Topic, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'h2',
+          null,
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/category/' + this.props.match.params.categorySlug },
+            this.state.category
+          ),
+          ' :: ',
+          this.state.topic
+        ),
+        this.state.expertise.map(function (expertise) {
+          return _react2.default.createElement(_Expertise2.default, {
+            key: expertise.expertise_id.toString(),
+            expertise: expertise });
+        })
+      );
+    }
+  }]);
+
+  return Topic;
+}(_react2.default.Component);
+
+exports.default = Topic;
+
+},{"./Expertise.jsx":224,"react":218,"react-router-dom":180}],226:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterDom = require('react-router-dom');
+
+var _Expertise = require('./Expertise.jsx');
+
+var _Expertise2 = _interopRequireDefault(_Expertise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var User = function (_React$Component) {
+  _inherits(User, _React$Component);
+
+  function User(props) {
+    _classCallCheck(this, User);
+
+    var _this = _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this, props));
+
+    _this.state = { expertise: [] };
+    fetch('/api/user/' + _this.props.match.params.username).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      _this.setState({
+        expertise: data.results
+      });
+    });
+    return _this;
+  }
+
+  _createClass(User, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'h2',
+          null,
+          this.props.match.params.username
+        ),
+        this.state.expertise.map(function (expertise) {
+          return _react2.default.createElement(
+            'div',
+            { key: expertise.expertise_id.toString() },
+            _react2.default.createElement(
+              'h3',
+              null,
+              _react2.default.createElement(
+                _reactRouterDom.Link,
+                { to: '/category/' + expertise.category_slug },
+                expertise.category
+              ),
+              ' :: ',
+              _react2.default.createElement(
+                _reactRouterDom.Link,
+                { to: '/category/' + expertise.category_slug + '/topic/' + expertise.topic_slug },
+                expertise.topic
+              )
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              expertise.expertise
+            )
+          );
+        })
+      );
+    }
+  }]);
+
+  return User;
+}(_react2.default.Component);
+
+exports.default = User;
+
+},{"./Expertise.jsx":224,"react":218,"react-router-dom":180}],227:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterDom = require('react-router-dom');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24398,39 +24507,42 @@ var Users = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Users.__proto__ || Object.getPrototypeOf(Users)).call(this, props));
 
     _this.state = { users: [] };
+    fetch('/api/users').then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      _this.setState({
+        users: data.results
+      });
+    });
     return _this;
   }
 
   _createClass(Users, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      var _this2 = this;
-
-      fetch('/api/users').then(function (response) {
-        return response.json();
-      }).then(function (data) {
-        _this2.setState({
-          users: data.results
-        });
-      });
-    }
-  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'ul',
+        'div',
         null,
-        this.state.users.map(function (user) {
-          return _react2.default.createElement(
-            'li',
-            { key: user.username },
-            _react2.default.createElement(
-              _reactRouterDom.Link,
-              { to: '/user/' + user.username },
-              user.username
-            )
-          );
-        })
+        _react2.default.createElement(
+          'h2',
+          null,
+          'Users'
+        ),
+        _react2.default.createElement(
+          'ul',
+          null,
+          this.state.users.map(function (user) {
+            return _react2.default.createElement(
+              'li',
+              { key: user.username },
+              _react2.default.createElement(
+                _reactRouterDom.Link,
+                { to: '/user/' + user.username },
+                user.username
+              )
+            );
+          })
+        )
       );
     }
   }]);
@@ -24440,7 +24552,7 @@ var Users = function (_React$Component) {
 
 exports.default = Users;
 
-},{"./User.jsx":227,"react":218,"react-router-dom":180}],229:[function(require,module,exports){
+},{"react":218,"react-router-dom":180}],228:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -24451,94 +24563,27 @@ var _reactDom = require('react-dom');
 
 var _reactRouterDom = require('react-router-dom');
 
-var _Users2 = require('./components/Users.jsx');
+var _Users = require('./components/Users.jsx');
 
-var _Users3 = _interopRequireDefault(_Users2);
+var _Users2 = _interopRequireDefault(_Users);
 
-var _User2 = require('./components/User.jsx');
+var _User = require('./components/User.jsx');
 
-var _User3 = _interopRequireDefault(_User2);
+var _User2 = _interopRequireDefault(_User);
 
-var _Categories2 = require('./components/Categories.jsx');
+var _Categories = require('./components/Categories.jsx');
 
-var _Categories3 = _interopRequireDefault(_Categories2);
+var _Categories2 = _interopRequireDefault(_Categories);
 
-var _Category2 = require('./components/Category.jsx');
+var _Category = require('./components/Category.jsx');
 
-var _Category3 = _interopRequireDefault(_Category2);
+var _Category2 = _interopRequireDefault(_Category);
 
-var _Topic2 = require('./components/Topic.jsx');
+var _Topic = require('./components/Topic.jsx');
 
-var _Topic3 = _interopRequireDefault(_Topic2);
+var _Topic2 = _interopRequireDefault(_Topic);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _Front = function _Front() {
-  return _react2.default.createElement(
-    'div',
-    null,
-    'Welcome to the FWLife Knowledge Base! Blah blah blah. ',
-    _react2.default.createElement(
-      _reactRouterDom.Link,
-      { to: '/users' },
-      'Users'
-    ),
-    ' or ',
-    _react2.default.createElement(
-      _reactRouterDom.Link,
-      { to: '/categories' },
-      'Categories'
-    )
-  );
-};
-
-var _Categories = function _Categories() {
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(_Categories3.default, null)
-  );
-};
-
-var _Category = function _Category(_ref) {
-  var categorySlug = _ref.categorySlug;
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(Topics, {
-      category: categorySlug })
-  );
-};
-
-var _Topic = function _Topic(_ref2) {
-  var categorySlug = _ref2.categorySlug,
-      topicSlug = _ref2.topicSlug;
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(_Topic3.default, {
-      category: categorySlug,
-      topic: topicSlug })
-  );
-};
-
-var _Users = function _Users() {
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(_Users3.default, null)
-  );
-};
-
-var _User = function _User(_ref3) {
-  var username = _ref3.username;
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(_User3.default, {
-      username: username })
-  );
-};
 
 var KnowledgeBase = function KnowledgeBase() {
   return _react2.default.createElement(
@@ -24576,13 +24621,17 @@ var KnowledgeBase = function KnowledgeBase() {
         )
       )
     ),
-    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: KnowledgeBase }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/categories', component: _Categories }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/category/:categorSlug', component: _Category }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/category/:categorySlug/:topicSlug', component: _Topic }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/users', component: _Users3.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/user/:username', component: _User3.default })
+    _react2.default.createElement(
+      _reactRouterDom.Switch,
+      null,
+      _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: KnowledgeBase }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/categories', component: _Categories2.default }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/category/:categorySlug/topic/:topicSlug', component: _Topic2.default }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/category/:categorySlug', component: _Category2.default }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/users', component: _Users2.default }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/user/:username', component: _User2.default })
+    )
   )
 ), document.getElementById('app'));
 
-},{"./components/Categories.jsx":222,"./components/Category.jsx":223,"./components/Topic.jsx":225,"./components/User.jsx":227,"./components/Users.jsx":228,"react":218,"react-dom":43,"react-router-dom":180}]},{},[222,223,224,225,226,227,228,229]);
+},{"./components/Categories.jsx":222,"./components/Category.jsx":223,"./components/Topic.jsx":225,"./components/User.jsx":226,"./components/Users.jsx":227,"react":218,"react-dom":43,"react-router-dom":180}]},{},[222,223,224,225,226,227,228]);
