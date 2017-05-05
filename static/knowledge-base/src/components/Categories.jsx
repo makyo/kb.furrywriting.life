@@ -1,17 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import 'whatwg-fetch';
 
 export default class Categories extends React.Component {
   constructor(props) {
     super(props);
     this.state = {categories: []};
+    console.log('constructed', new Date())
     fetch(`/api/categories`).then((response) => {
+      console.log('fetch', new Date())
       return response.json();
-    }).then((data) => {
+    }, console.log).then((data) => {
       this.setState({
         categories: data.results
       });
-    });
+      console.log('json', new Date())
+    }, console.log);
   }
 
   render() {

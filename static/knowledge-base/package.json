@@ -16,8 +16,10 @@
     "grunt-browserify": "^5.0.0",
     "grunt-contrib-uglify": "^2.3.0",
     "grunt-contrib-watch": "^1.0.0",
+    "promise-polyfill": "^6.0.2",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "react-router-dom": "^4.1.1"
+    "react-router-dom": "^4.1.1",
+    "whatwg-fetch": "^2.0.3"
   }
 }

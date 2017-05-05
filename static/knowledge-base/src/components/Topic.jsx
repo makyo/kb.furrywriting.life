@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Expertise from './Expertise.jsx';
+import 'whatwg-fetch';
 
 export default class Topic extends React.Component {
   constructor(props) {
@@ -8,7 +9,7 @@ export default class Topic extends React.Component {
     this.state = {expertise: [], category: '(no topics)', topic: '(no expertise)'};
     fetch(`/api/category/${this.props.match.params.categorySlug}/topic/${this.props.match.params.topicSlug}`).then((response) => {
       return response.json();
-    }).then((data) => {
+    }, console.log).then((data) => {
       let newState = {
         expertise: data.results,
       };
@@ -17,7 +18,7 @@ export default class Topic extends React.Component {
         newState.topic = data.results[0].topic;
       }
       this.setState(newState);
-    });
+    }, console.log);
   }
 
   render() {

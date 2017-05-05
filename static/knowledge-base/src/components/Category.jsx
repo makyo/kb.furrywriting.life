@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import 'whatwg-fetch';
 
 export default class Category extends React.Component {
   constructor(props) {
@@ -7,7 +8,7 @@ export default class Category extends React.Component {
     this.state = {topics: [], title: "(no topics)"};
     fetch(`/api/category/${this.props.match.params.categorySlug}/topics`).then((response) => {
       return response.json();
-    }).then((data) => {
+    }, console.log).then((data) => {
       let newState = {
         topics: data.results,
       };
@@ -15,7 +16,7 @@ export default class Category extends React.Component {
         newState.title = data.results[0].category;
       }
       this.setState(newState);
-    });
+    }, console.log);
   }
 
   render() {

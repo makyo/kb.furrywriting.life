@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import 'whatwg-fetch';
 
 export default class Users extends React.Component {
   constructor(props) {
@@ -7,11 +8,11 @@ export default class Users extends React.Component {
     this.state = {users: []};
     fetch('/api/users').then((response) => {
       return response.json();
-    }).then((data) => {
+    }, console.log).then((data) => {
       this.setState({
         users: data.results
       });
-    });
+    }, console.log);
   }
 
   render() {
