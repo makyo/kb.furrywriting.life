@@ -1,6 +1,5 @@
 import os
 import sqlite3
-from contextlib import closing
 
 from flask import (
     Flask,
@@ -16,7 +15,7 @@ from api import api
 
 
 # Config
-DATABASE = 'dev.db'
+DATABASE = 'knowledgebase.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 
@@ -35,21 +34,6 @@ def generate_csrf_token():
     if '_csrf_token' not in session:
         session['_csrf_token'] = base64.b64encode(os.urandom(12))
     return session['_csrf_token']
-
-
-def migrate():
-    migrations_dir = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'migrations')
-    with closing(connect_db()) as db:
-        for filename in os.listdir(migrations_dir):
-            with open(os.path.join(migrations_dir, filename), 'rb') as f:
-                try:
-                    db.cursor().executescript(f.read().decode('utf-8'))
-                except Exception as e:
-                    print('Got {} - maybe already applied?'.format(e))
-                finally:
-                    pass
 
 
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
@@ -78,13 +62,4 @@ def front(path):
 
 
 if __name__ == '__main__':
-    migrate()
-    with closing(connect_db()) as db:
-        with open('fixtures.sql', 'rb') as f:
-            try:
-                db.cursor().executescript(f.read().decode('utf-8'))
-            except Exception as e:
-                print('Got {} - maybe already applied?'.format(e))
-            finally:
-                pass
     app.run()

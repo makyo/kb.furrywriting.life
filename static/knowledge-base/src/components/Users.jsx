@@ -19,7 +19,7 @@ export default class Users extends React.Component {
     return (
       <div>
         <h2>Users</h2>
-        <ul>
+        <ul className="router-links">
           {this.state.users.map((user) =>
             <li key={user.username}>
               <Link to={`/user/${user.username}`}>{user.username}</Link>

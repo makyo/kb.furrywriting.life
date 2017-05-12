@@ -29,7 +29,8 @@ export default class Topic extends React.Component {
         {this.state.expertise.map((expertise) => (
           <Expertise
             key={expertise.expertise_id.toString()}
-            expertise={expertise} />
+            expertise={expertise}
+            forTopic={true} />
         ))}
       </div>
     );

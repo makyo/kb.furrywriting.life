@@ -23,7 +23,7 @@ export default class Category extends React.Component {
     return (
       <div>
         <h2>{this.state.title}</h2>
-        <ul>
+        <ul className="router-links">
           {this.state.topics.map((topic) => (
             <li key={topic.slug}>
               <Link
