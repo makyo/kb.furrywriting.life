@@ -13,7 +13,7 @@ api = Blueprint('api', __name__)
 def ready():
     return json.jsonify({'ready': 'yes'})
 
-    
+
 @api.route('/categories')
 def get_categories():
     result = {
@@ -77,41 +77,62 @@ def get_topics(category):
     return json.jsonify(result)
 
 
-@api.route('/topic/<topic>')
 @api.route('/category/<category>/topic/<topic>')
 def get_topic(category, topic):
     result = {
         'error': '',
         'results': [],
     }
-    topic_exists = g.db.execute('select * from topics where slug = ?',
-                                (topic,)).fetchone() is not None
+    topic_exists = g.db.execute(
+        'select * from topics where slug = ? and category = ?',
+        (topic, category)).fetchone() is not None
     if not topic_exists:
         result['error'] = 'topic not found'
         return json.jsonify(result)
-    cur = g.db.execute('''
+    cur_topicexpertises = g.db.execute('''
         select
-            expertise.id,
-            expertise.expertise,
+            topicexpertise.*,
             topics.topic,
-            categories.category,
-            users.username
-        from expertise
-            join topics on topics.slug = expertise.topic
+            categories.category
+        from topicexpertise
+            join topics on topics.id = topicexpertise.topic
             join categories on categories.slug = topics.category
-            join users on users.username = expertise.user
-        where topics.slug = ?''',
-        (topic,))
-    for row in cur:
-        result['results'].append({
-            'expertise_id': row[0],
-            'expertise': row[1],
+        where topics.slug = ? and topics.category = ?''',
+        (topic, category))
+    for row in cur_topicexpertises:
+        expertise = g.db.execute('select * from expertise where id = ?',
+                               (row[2],)).fetchone()
+        expertise_result = {
+            'expertise_id': row[2],
+            'expertise': expertise[2],
+            'content_warning': expertise[3],
+            'expertise_topics': [],
             'topic_slug': topic,
-            'topic': row[2],
+            'topic': row[3],
             'category_slug': category,
-            'category': row[3],
-            'user': row[4],
-        })
+            'category': row[4],
+            'user': expertise[1],
+        }
+        topics = g.db.execute('''
+            select
+                topicexpertise.id,
+                topics.slug,
+                topics.topic,
+                categories.slug,
+                categories.category
+            from topicexpertise
+                join topics on topics.id = topicexpertise.topic
+                join categories on categories.slug = topics.category
+            where topicexpertise.expertise = ?''', (row[2],))
+        for row in topics:
+            topic_result = {
+                'category_slug': row[3],
+                'category': row[4],
+                'topic_slug': row[1],
+                'topic': row[2],
+            }
+            expertise_result['expertise_topics'].append(topic_result)
+        result['results'].append(expertise_result)
     return json.jsonify(result)
 
 
@@ -140,28 +161,34 @@ def get_user(user):
     if not user_exists:
         result['error'] = 'user not found'
         return json.jsonify(result)
-    cur = g.db.execute('''
-        select
-            expertise.id,
-            expertise.expertise,
-            topics.slug,
-            topics.topic,
-            categories.slug,
-            categories.category
-        from expertise
-            join topics on expertise.topic = topics.slug
-            join categories on topics.category = categories.slug
-            join users on expertise.user = users.username
-        where expertise.user = ?''',
-        (user,))
+    cur = g.db.execute('select * from expertise where user = ?',
+                     (user,))
     for row in cur:
-        result['results'].append({
+        expertise_result = {
             'expertise_id': row[0],
-            'expertise': row[1],
-            'topic_slug': row[2],
-            'topic': row[3],
-            'category_slug': row[4],
-            'category': row[5],
-            'user': user,
-        })
+            'expertise': row[2],
+            'content_warning': row[3] == 1,
+            'expertise_topics': [],
+            'user': row[1],
+        }
+        topics = g.db.execute('''
+            select
+                topicexpertise.id,
+                topics.slug,
+                topics.topic,
+                categories.slug,
+                categories.category
+            from topicexpertise
+                join topics on topics.id = topicexpertise.topic
+                join categories on categories.slug = topics.category
+            where topicexpertise.expertise = ?''', (row[0],))
+        for row in topics:
+            topic_result = {
+                'category_slug': row[3],
+                'category': row[4],
+                'topic_slug': row[1],
+                'topic': row[2],
+            }
+            expertise_result['expertise_topics'].append(topic_result)
+        result['results'].append(expertise_result)
     return json.jsonify(result)

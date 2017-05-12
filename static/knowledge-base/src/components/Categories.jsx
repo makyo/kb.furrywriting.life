@@ -22,7 +22,7 @@ export default class Categories extends React.Component {
     return (
       <div>
         <h2>Categories</h2>
-        <ul>
+        <ul className="router-links">
           {this.state.categories.map((category) => (
             <li key={category.slug}>
               <Link

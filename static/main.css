@@ -160,6 +160,26 @@ a:visited {
 .serif {
   font-family: "Gentium Book Basic", "Times New Roman", serif; }
 
+.router-links {
+    list-style-type: none
+}
+
+.router-links li {
+    display: inline-block;
+    padding: 2px 0.5em;
+    margin: 0.5em;
+    background-color: #eee;
+    border: 1px solid transparent;
+    border-radius: 3px;
+}
+.expertise {
+    padding: 0.5em 1em;
+    background-color: #eee;
+}
+.expertise:nth-of-type(odd) {
+    background-color: #ddd;
+}
+
 /**
 * Site header
 */
