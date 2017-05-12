@@ -182,6 +182,19 @@ a:visited {
 .expertise:nth-of-type(odd) {
     background-color: #ddd;
 }
+.inverse .router-links li {
+    background-color: #222;
+    border-color: #555;
+}
+.inverse .expertise .router-links li {
+    background-color: #222;
+}
+.inverse .expertise {
+    background-color: #333;
+}
+.inverse .expertise:nth-of-type(odd) {
+    background-color: #444;
+}
 
 /**
 * Site header
