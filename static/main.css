@@ -172,6 +172,9 @@ a:visited {
     border: 1px solid transparent;
     border-radius: 3px;
 }
+.expertise .router-links li {
+    background-color: #fff;
+}
 .expertise {
     padding: 0.5em 1em;
     background-color: #eee;
